@@ -1,6 +1,9 @@
 package dsl
 
-import "math/big"
+import (
+	"errors"
+	"math/big"
+)
 
 // BareissDet 使用 Bareiss 算法计算整型矩阵的行列式（返回 big.Int）
 func BareissDet(m *MatrixInt) *big.Int {
@@ -152,4 +155,65 @@ func columnPivotsRat(m *MatrixInt) []int {
 		row++
 	}
 	return pivots
+}
+
+// matrixMulInt 计算两个整型矩阵的乘积（a*b）
+func matrixMulInt(a, b *MatrixInt) (*MatrixInt, error) {
+	if a.C != b.R {
+		return nil, errors.New("matrix dimension mismatch in mul")
+	}
+	res := NewMatrixInt(a.R, b.C)
+	for i := 0; i < a.R; i++ {
+		for j := 0; j < b.C; j++ {
+			var s int64
+			for k := 0; k < a.C; k++ {
+				s += a.A[i][k] * b.A[k][j]
+			}
+			res.A[i][j] = s
+		}
+	}
+	return res, nil
+}
+
+// matrixPowInt 计算整型矩阵的幂 A^n，n>=0
+func matrixPowInt(a *MatrixInt, n int64) (*MatrixInt, error) {
+	if a.R != a.C {
+		return nil, errors.New("matrix power expects square matrix")
+	}
+	if n < 0 {
+		return nil, errors.New("matrix power with negative exponent is not supported")
+	}
+	// 单位矩阵
+	res := NewMatrixInt(a.R, a.C)
+	for i := 0; i < a.R; i++ {
+		res.A[i][i] = 1
+	}
+	if n == 0 {
+		return res, nil
+	}
+	base := NewMatrixInt(a.R, a.C)
+	for i := 0; i < a.R; i++ {
+		for j := 0; j < a.C; j++ {
+			base.A[i][j] = a.A[i][j]
+		}
+	}
+	exp := n
+	for exp > 0 {
+		if exp&1 == 1 {
+			tmp, err := matrixMulInt(res, base)
+			if err != nil {
+				return nil, err
+			}
+			res = tmp
+		}
+		if exp > 1 {
+			tmp, err := matrixMulInt(base, base)
+			if err != nil {
+				return nil, err
+			}
+			base = tmp
+		}
+		exp >>= 1
+	}
+	return res, nil
 }

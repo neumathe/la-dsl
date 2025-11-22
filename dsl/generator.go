@@ -149,6 +149,36 @@ func genMatrix(rng *rand.Rand, v Variable, inst *Instance) (interface{}, error) 
 	case "integer_solution":
 		// 该规则在更高层被特殊处理，不在这里直接生成
 		return nil, errors.New("integer_solution should be handled as derived/builder (use derived or orchestrator)")
+	case "scalar_identity":
+		// 生成 λI 型矩阵，所有对角线为同一随机整数 λ，其余为 0
+		// 配置：
+		//   lambda_min, lambda_max: λ 取值范围（含端点，默认 [-5,5]）
+		//   lambda_var: 写入到实例中的标量变量名（可选），例如 "lambda"
+		cfg := v.Generator
+		lmin := int64(defaultInt(cfg, "lambda_min", -5))
+		lmax := int64(defaultInt(cfg, "lambda_max", 5))
+		if lmax < lmin {
+			lmin, lmax = lmax, lmin
+		}
+		var lambda int64
+		for {
+			lambda = int64(rng.Intn(int(lmax-lmin+1)) + int(lmin))
+			if lambda != 0 {
+				break
+			}
+		}
+		m := NewMatrixInt(r, c)
+		for i := 0; i < r && i < c; i++ {
+			m.A[i][i] = lambda
+		}
+		if name, ok := cfg["lambda_var"].(string); ok && name != "" && inst != nil {
+			// 记录 λ，供后续表达式或答案使用
+			if inst.Vars == nil {
+				inst.Vars = map[string]interface{}{}
+			}
+			inst.Vars[name] = lambda
+		}
+		return m, nil
 	case "lambda_linear_det_zero":
 		// 为 det(A)=0 类型题目生成含单一参数 λ 的 3x3 矩阵，并保证 λ 为整数解
 		return genMatrixLambdaLinearDetZero(rng, v, inst)

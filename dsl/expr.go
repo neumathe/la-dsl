@@ -11,6 +11,93 @@ import (
 func EvaluateExpression(expr string, inst *Instance) (interface{}, error) {
 	expr = strings.TrimSpace(expr)
 
+	if strings.HasPrefix(expr, "pow(") && strings.HasSuffix(expr, ")") {
+		ins := insideParens(expr)
+		parts := splitArgs(ins)
+		if len(parts) != 2 {
+			return nil, fmt.Errorf("pow expects 2 args")
+		}
+		mname := strings.TrimSpace(parts[0])
+		v, ok := inst.Vars[mname]
+		if !ok {
+			return nil, fmt.Errorf("unknown variable %s", mname)
+		}
+		m, ok := v.(*MatrixInt)
+		if !ok {
+			return nil, fmt.Errorf("pow expects matrix as first arg")
+		}
+		expStr := strings.TrimSpace(parts[1])
+		var n int64
+		// 允许整数常量或标量变量
+		if vv, ok := inst.Vars[expStr]; ok {
+			switch t := vv.(type) {
+			case int64:
+				n = t
+			default:
+				return nil, fmt.Errorf("pow exponent var %s must be int64, got %T", expStr, vv)
+			}
+		} else {
+			// 解析字面量
+			n = int64(mustAtoi(expStr))
+		}
+		res, err := matrixPowInt(m, n)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
+
+	if strings.HasPrefix(expr, "matmul(") && strings.HasSuffix(expr, ")") {
+		ins := insideParens(expr)
+		parts := splitArgs(ins)
+		if len(parts) != 2 {
+			return nil, fmt.Errorf("matmul expects 2 args")
+		}
+		aName := strings.TrimSpace(parts[0])
+		bName := strings.TrimSpace(parts[1])
+		va, ok := inst.Vars[aName]
+		if !ok {
+			return nil, fmt.Errorf("unknown variable %s", aName)
+		}
+		vb, ok := inst.Vars[bName]
+		if !ok {
+			return nil, fmt.Errorf("unknown variable %s", bName)
+		}
+		a, ok1 := va.(*MatrixInt)
+		b, ok2 := vb.(*MatrixInt)
+		if !ok1 || !ok2 {
+			return nil, fmt.Errorf("matmul expects two matrices")
+		}
+		res, err := matrixMulInt(a, b)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
+
+	if strings.HasPrefix(expr, "mget(") && strings.HasSuffix(expr, ")") {
+		ins := insideParens(expr)
+		parts := splitArgs(ins)
+		if len(parts) != 3 {
+			return nil, fmt.Errorf("mget expects 3 args")
+		}
+		aName := strings.TrimSpace(parts[0])
+		i := mustAtoi(strings.TrimSpace(parts[1]))
+		j := mustAtoi(strings.TrimSpace(parts[2]))
+		v, ok := inst.Vars[aName]
+		if !ok {
+			return nil, fmt.Errorf("unknown variable %s", aName)
+		}
+		m, ok := v.(*MatrixInt)
+		if !ok {
+			return nil, fmt.Errorf("mget expects matrix")
+		}
+		if i < 1 || i > m.R || j < 1 || j > m.C {
+			return nil, fmt.Errorf("mget index out of range")
+		}
+		return m.A[i-1][j-1], nil
+	}
+
 	if strings.HasPrefix(expr, "det(") && strings.HasSuffix(expr, ")") {
 		arg := insideParens(expr)
 		v, ok := inst.Vars[arg]
@@ -163,6 +250,7 @@ func EvaluateExpression(expr string, inst *Instance) (interface{}, error) {
 			vL, lok := inst.Vars[left]
 			vR, rok := inst.Vars[right]
 			if lok && rok {
+				// matrix * vector
 				if m, ok := vL.(*MatrixInt); ok {
 					if x, ok2 := vR.(*VectorInt); ok2 {
 						if m.C != x.N {
@@ -177,6 +265,16 @@ func EvaluateExpression(expr string, inst *Instance) (interface{}, error) {
 							out.V[i] = sum
 						}
 						return out, nil
+					}
+				}
+				// matrix * matrix
+				if a, ok1 := vL.(*MatrixInt); ok1 {
+					if b, ok2 := vR.(*MatrixInt); ok2 {
+						res, err := matrixMulInt(a, b)
+						if err != nil {
+							return nil, err
+						}
+						return res, nil
 					}
 				}
 			}
