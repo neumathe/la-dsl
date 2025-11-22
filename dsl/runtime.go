@@ -86,7 +86,7 @@ func InstantiateProblem(p Problem, seedStr string, serverSalt string) (*Instance
 					}
 					inst.Vars[Aname] = val
 				} else {
-					return nil, fmt.Errorf("A var %s not found", Aname)
+					return nil, fmt.Errorf("matrix var %s not found", Aname)
 				}
 			}
 			A, ok1 := inst.Vars[Aname].(*MatrixInt)
@@ -130,7 +130,7 @@ func InstantiateProblem(p Problem, seedStr string, serverSalt string) (*Instance
 						}
 						inst.Vars[Aref] = val
 					} else {
-						return nil, fmt.Errorf("Aref %s not found", Aref)
+						return nil, fmt.Errorf("aref %s not found", Aref)
 					}
 				}
 				if _, ok := inst.Vars[Xref]; !ok {
@@ -141,7 +141,7 @@ func InstantiateProblem(p Problem, seedStr string, serverSalt string) (*Instance
 						}
 						inst.Vars[Xref] = val
 					} else {
-						return nil, fmt.Errorf("Xref %s not found", Xref)
+						return nil, fmt.Errorf("xref %s not found", Xref)
 					}
 				}
 				A := inst.Vars[Aref].(*MatrixInt)
@@ -304,7 +304,7 @@ func ExtractAnswerWithMeta(p Problem, inst *Instance) ([]AnswerField, error) {
 func solveLinearSystemRat(A *MatrixInt, b *VectorInt) ([]*big.Rat, error) {
 	n := A.R
 	if A.C != n {
-		return nil, errors.New("A must be square for solve")
+		return nil, errors.New("matrix A must be square for solve")
 	}
 	if b.N != n {
 		return nil, errors.New("b size mismatch")
