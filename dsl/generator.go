@@ -122,11 +122,16 @@ func genMatrix(rng *rand.Rand, v Variable, inst *Instance) (interface{}, error) 
 	case "full_rank":
 		min := int64(defaultInt(v.Generator, "min", -5))
 		max := int64(defaultInt(v.Generator, "max", 5))
+		// 使用确定性方法：每次尝试用独立的 RNG，避免失败尝试影响随机数序列
 		for attempt := 0; attempt < 200; attempt++ {
+			// 为每次尝试创建独立的 RNG，基于主 RNG 的下一个 Int63
+			attemptSeed := rng.Int63()
+			attemptRng := rand.New(rand.NewSource(attemptSeed))
+
 			m := NewMatrixInt(r, c)
 			for i := 0; i < r; i++ {
 				for j := 0; j < c; j++ {
-					m.A[i][j] = int64(rng.Intn(int(max-min+1)) + int(min))
+					m.A[i][j] = int64(attemptRng.Intn(int(max-min+1)) + int(min))
 				}
 			}
 			if r == c {

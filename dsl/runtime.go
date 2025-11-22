@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"math/rand"
+	"sort"
 	"strings"
 )
 
@@ -19,9 +20,22 @@ func InstantiateProblem(p Problem, seedStr string, serverSalt string) (*Instance
 	seed := deriveSeed(seedStr, fmt.Sprintf("%d", p.ID), p.Version, serverSalt)
 	rng := rand.New(rand.NewSource(seed))
 
-	for name, v := range p.Variables {
+	// 对变量名排序，确保确定性的生成顺序（Go map 迭代顺序是随机的）
+	varNames := make([]string, 0, len(p.Variables))
+	for name := range p.Variables {
+		varNames = append(varNames, name)
+	}
+	sort.Strings(varNames)
+
+	for _, name := range varNames {
+		v := p.Variables[name]
 		if v.Fixed != nil {
-			inst.Vars[name] = v.Fixed
+			// 将 fixed 值转换为正确的类型
+			fixedVal, err := convertFixed(v)
+			if err != nil {
+				return nil, fmt.Errorf("convert fixed variable %s error: %w", name, err)
+			}
+			inst.Vars[name] = fixedVal
 			continue
 		}
 		val, err := generateVariable(rng, name, v, inst)
@@ -36,8 +50,15 @@ func InstantiateProblem(p Problem, seedStr string, serverSalt string) (*Instance
 		inst.Vars[name] = val
 	}
 
-	for name, expr := range p.Derived {
-		expr = strings.TrimSpace(expr)
+	// 对派生变量名排序，确保确定性
+	derivedNames := make([]string, 0, len(p.Derived))
+	for name := range p.Derived {
+		derivedNames = append(derivedNames, name)
+	}
+	sort.Strings(derivedNames)
+
+	for _, name := range derivedNames {
+		expr := strings.TrimSpace(p.Derived[name])
 		if strings.HasPrefix(expr, "integer_solution(") {
 			ins := insideParens(expr)
 			parts := splitArgs(ins)
@@ -335,4 +356,87 @@ func solveLinearSystemRat(A *MatrixInt, b *VectorInt) ([]*big.Rat, error) {
 		x[i] = new(big.Rat).Set(M[i][n])
 	}
 	return x, nil
+}
+
+// convertFixed 将 Variable.Fixed 从 interface{} 转换为正确的类型
+func convertFixed(v Variable) (interface{}, error) {
+	if v.Fixed == nil {
+		return nil, errors.New("fixed is nil")
+	}
+
+	switch v.Kind {
+	case "scalar":
+		// 可能是 int, int64, float64 等
+		switch val := v.Fixed.(type) {
+		case int:
+			return int64(val), nil
+		case int64:
+			return val, nil
+		case float64:
+			return int64(val), nil
+		default:
+			return nil, fmt.Errorf("unsupported scalar fixed type: %T", v.Fixed)
+		}
+
+	case "vector":
+		// Fixed 应该是 []interface{} 或 *VectorInt
+		if vec, ok := v.Fixed.(*VectorInt); ok {
+			return vec, nil
+		}
+		arr, ok := v.Fixed.([]interface{})
+		if !ok {
+			return nil, fmt.Errorf("vector fixed expects []interface{}, got %T", v.Fixed)
+		}
+		size := v.Size
+		if size == 0 {
+			size = len(arr)
+		}
+		vec := NewVectorInt(size)
+		for i := 0; i < size && i < len(arr); i++ {
+			vec.V[i] = toInt64(arr[i])
+		}
+		return vec, nil
+
+	case "matrix":
+		// Fixed 应该是 [][]interface{} 或 *MatrixInt
+		if mat, ok := v.Fixed.(*MatrixInt); ok {
+			return mat, nil
+		}
+		arr2d, ok := v.Fixed.([][]interface{})
+		if !ok {
+			return nil, fmt.Errorf("matrix fixed expects [][]interface{}, got %T", v.Fixed)
+		}
+		rows := v.Rows
+		cols := v.Cols
+		if rows == 0 {
+			rows = len(arr2d)
+		}
+		if cols == 0 && rows > 0 {
+			cols = len(arr2d[0])
+		}
+		mat := NewMatrixInt(rows, cols)
+		for i := 0; i < rows && i < len(arr2d); i++ {
+			for j := 0; j < cols && j < len(arr2d[i]); j++ {
+				mat.A[i][j] = toInt64(arr2d[i][j])
+			}
+		}
+		return mat, nil
+
+	default:
+		return nil, fmt.Errorf("unknown variable kind: %s", v.Kind)
+	}
+}
+
+// toInt64 将 interface{} 转换为 int64
+func toInt64(v interface{}) int64 {
+	switch val := v.(type) {
+	case int:
+		return int64(val)
+	case int64:
+		return val
+	case float64:
+		return int64(val)
+	default:
+		return 0
+	}
 }
