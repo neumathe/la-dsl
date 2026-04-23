@@ -157,7 +157,7 @@ func TestBasisTransitionAndCoord(t *testing.T) {
 
 	t.Logf("示例题目（LaTeX）：%s", qText)
 	t.Logf("过渡矩阵为：%s", Ptex)
-	t.Logf("坐标为：%s\\(^T.\\)", coordTex)
+	t.Logf("坐标为：%s$^T$", coordTex)
 	t.Logf("示例答案字段（按照 9 个矩阵元素 + 3 个坐标）：%v", ansSlice)
 }
 
@@ -220,10 +220,10 @@ func formatBasisTransitionQuestion(a0, a1, a2 int64) string {
 	}
 
 	var b strings.Builder
-	b.WriteString("向量空间\\(R[x]_3\\)中，由基1，x，\\(x^2\\)到基-1，-2+1x，-1-2x+2\\(x^2\\)的过渡矩阵为")
+	b.WriteString("向量空间$R[x]_3$中，由基1，x，$x^2$到基-1，-2+1x，-1-2x+2$x^2$的过渡矩阵为")
 	b.WriteString("，p(x)=")
 	b.WriteString(pStr)
-	b.WriteString(" 在基-1，-2+1x，-1-2x+2\\(x^2\\)下的坐标为")
+	b.WriteString(" 在基-1，-2+1x，-1-2x+2$x^2$下的坐标为")
 	return b.String()
 }
 

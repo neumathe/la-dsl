@@ -50,68 +50,88 @@ func InstantiateProblem(p Problem, seedStr string, serverSalt string) (*Instance
 		inst.Vars[name] = val
 	}
 
-	// 对派生变量名排序，确保确定性
-	derivedNames := make([]string, 0, len(p.Derived))
-	for name := range p.Derived {
-		derivedNames = append(derivedNames, name)
+	// 派生变量多轮求值，支持依赖链（如先 transpose 再 matmul）
+	pending := make(map[string]string, len(p.Derived))
+	for name, expr := range p.Derived {
+		pending[name] = strings.TrimSpace(expr)
 	}
-	sort.Strings(derivedNames)
-
-	for _, name := range derivedNames {
-		expr := strings.TrimSpace(p.Derived[name])
-		if strings.HasPrefix(expr, "integer_solution(") {
-			ins := insideParens(expr)
-			parts := splitArgs(ins)
-			if len(parts) != 2 {
-				return nil, fmt.Errorf("integer_solution expects 2 args A,x")
-			}
-			Aname := strings.TrimSpace(parts[0])
-			xname := strings.TrimSpace(parts[1])
-			if _, ok := inst.Vars[xname]; !ok {
-				if xv, ok := p.Variables[xname]; ok {
-					val, err := generateVariable(rng, xname, xv, inst)
-					if err != nil {
-						return nil, err
-					}
-					inst.Vars[xname] = val
-				} else {
-					return nil, fmt.Errorf("x var %s not found", xname)
-				}
-			}
-			if _, ok := inst.Vars[Aname]; !ok {
-				if Av, ok := p.Variables[Aname]; ok {
-					val, err := generateVariable(rng, Aname, Av, inst)
-					if err != nil {
-						return nil, err
-					}
-					inst.Vars[Aname] = val
-				} else {
-					return nil, fmt.Errorf("matrix var %s not found", Aname)
-				}
-			}
-			A, ok1 := inst.Vars[Aname].(*MatrixInt)
-			x, ok2 := inst.Vars[xname].(*VectorInt)
-			if !ok1 || !ok2 {
-				return nil, fmt.Errorf("integer_solution expects matrix and vector")
-			}
-			b := NewVectorInt(A.R)
-			for i := 0; i < A.R; i++ {
-				var s int64
-				for j := 0; j < A.C; j++ {
-					s += A.A[i][j] * x.V[j]
-				}
-				b.V[i] = s
-			}
-			inst.Vars[name] = b
-			inst.Derived[name] = b
-			continue
+	for len(pending) > 0 {
+		names := make([]string, 0, len(pending))
+		for k := range pending {
+			names = append(names, k)
 		}
-		val, err := EvaluateExpression(expr, inst)
-		if err != nil {
-			return nil, fmt.Errorf("evaluate derived %s (%s): %w", name, expr, err)
+		sort.Strings(names)
+		progress := 0
+		var lastErr error
+		for _, name := range names {
+			expr := pending[name]
+			if strings.HasPrefix(expr, "integer_solution(") {
+				ins := insideParens(expr)
+				parts := splitArgs(ins)
+				if len(parts) != 2 {
+					return nil, fmt.Errorf("integer_solution expects 2 args A,x")
+				}
+				Aname := strings.TrimSpace(parts[0])
+				xname := strings.TrimSpace(parts[1])
+				if _, ok := inst.Vars[xname]; !ok {
+					if xv, ok := p.Variables[xname]; ok {
+						val, err := generateVariable(rng, xname, xv, inst)
+						if err != nil {
+							lastErr = err
+							continue
+						}
+						inst.Vars[xname] = val
+					} else {
+						return nil, fmt.Errorf("x var %s not found", xname)
+					}
+				}
+				if _, ok := inst.Vars[Aname]; !ok {
+					if Av, ok := p.Variables[Aname]; ok {
+						val, err := generateVariable(rng, Aname, Av, inst)
+						if err != nil {
+							lastErr = err
+							continue
+						}
+						inst.Vars[Aname] = val
+					} else {
+						return nil, fmt.Errorf("matrix var %s not found", Aname)
+					}
+				}
+				A, ok1 := inst.Vars[Aname].(*MatrixInt)
+				x, ok2 := inst.Vars[xname].(*VectorInt)
+				if !ok1 || !ok2 {
+					return nil, fmt.Errorf("integer_solution expects matrix and vector")
+				}
+				b := NewVectorInt(A.R)
+				for i := 0; i < A.R; i++ {
+					var s int64
+					for j := 0; j < A.C; j++ {
+						s += A.A[i][j] * x.V[j]
+					}
+					b.V[i] = s
+				}
+				inst.Vars[name] = b
+				inst.Derived[name] = b
+				delete(pending, name)
+				progress++
+				continue
+			}
+			val, err := EvaluateExpression(expr, inst)
+			if err != nil {
+				lastErr = err
+				continue
+			}
+			inst.Vars[name] = val
+			inst.Derived[name] = val
+			delete(pending, name)
+			progress++
 		}
-		inst.Vars[name] = val
-		inst.Derived[name] = val
+		if progress == 0 {
+			if lastErr != nil {
+				return nil, fmt.Errorf("derived evaluation stuck: %w", lastErr)
+			}
+			return nil, fmt.Errorf("derived evaluation stuck on %d names", len(pending))
+		}
 	}
 
 	for name, v := range p.Variables {
@@ -234,11 +254,22 @@ func ExtractAnswerWithMeta(p Problem, inst *Instance) ([]AnswerField, error) {
 		if len(p.Answer.FieldDefs) > 0 && p.Answer.FieldDefs[0].ID != "" {
 			id = p.Answer.FieldDefs[0].ID
 		}
+		var layout *AnswerFieldLayout
+		var judge *AnswerJudgeSpec
+		var note string
+		if len(p.Answer.FieldDefs) > 0 {
+			layout = p.Answer.FieldDefs[0].Layout
+			judge = p.Answer.FieldDefs[0].Judge
+			note = p.Answer.FieldDefs[0].Note
+		}
 		return []AnswerField{
 			{
-				ID:    id,
-				Expr:  p.Answer.Expression,
-				Value: val,
+				ID:     id,
+				Expr:   p.Answer.Expression,
+				Value:  val,
+				Layout: layout,
+				Judge:  judge,
+				Note:   note,
 			},
 		}, nil
 	}
@@ -259,9 +290,12 @@ func ExtractAnswerWithMeta(p Problem, inst *Instance) ([]AnswerField, error) {
 				id = fmt.Sprintf("field_%d", i+1)
 			}
 			fields = append(fields, AnswerField{
-				ID:    id,
-				Expr:  fd.Expr,
-				Value: val,
+				ID:     id,
+				Expr:   fd.Expr,
+				Value:  val,
+				Layout: fd.Layout,
+				Judge:  fd.Judge,
+				Note:   fd.Note,
 			})
 		}
 		return fields, nil

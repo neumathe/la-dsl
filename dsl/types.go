@@ -34,8 +34,11 @@ type AnswerSchema struct {
 
 // AnswerFieldDef 为一个答案字段的 DSL 定义
 type AnswerFieldDef struct {
-	ID   string `json:"id,omitempty"`
-	Expr string `json:"expr,omitempty"`
+	ID     string             `json:"id,omitempty"`
+	Expr   string             `json:"expr,omitempty"`
+	Layout *AnswerFieldLayout `json:"layout,omitempty"`
+	Judge  *AnswerJudgeSpec   `json:"judge,omitempty"`
+	Note   string             `json:"note,omitempty"` // 学生可见的解题提示，留空则自动生成默认提示
 }
 
 // Instance 表示一次题目实例化的结果

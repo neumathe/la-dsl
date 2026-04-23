@@ -172,12 +172,12 @@ func formatHomogeneousSystemWithLambda(m *dsl.MatrixInt, lambdaVal int64) string
 	row3 := fmt.Sprintf("%s(%s) x_3=0", row3Prefix, lambdaTerm)
 
 	var b strings.Builder
-	b.WriteString("已知齐次线性方程组\\(\\begin{cases}")
+	b.WriteString("已知齐次线性方程组$\\begin{cases}")
 	b.WriteString(row1)
 	b.WriteString("\\\\")
 	b.WriteString(row2)
 	b.WriteString("\\\\")
 	b.WriteString(row3)
-	b.WriteString("\\end{cases}\\)有非零解，则\\(\\lambda\\)=")
+	b.WriteString("\\end{cases}$有非零解，则$\\lambda$=")
 	return b.String()
 }

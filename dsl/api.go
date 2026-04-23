@@ -1,20 +1,57 @@
 package dsl
 
+import "fmt"
+
 // 面向上层的封装 API：
 // 上层仅需传入 Problem + seedStr + serverSalt，
 // 即可得到渲染好的题目文本和带空 ID 的答案列表。
 
 // AnswerField 是对单个答案字段的封装，方便前端展示与后端判分。
 type AnswerField struct {
-	ID    string      `json:"id"`
-	Expr  string      `json:"expr"`
-	Value interface{} `json:"value"`
+	ID     string             `json:"id"`
+	Expr   string             `json:"expr"`
+	Value  interface{}        `json:"value"`
+	Layout *AnswerFieldLayout `json:"layout,omitempty"`
+	Judge  *AnswerJudgeSpec   `json:"judge,omitempty"`
+	Note   string             `json:"note,omitempty"`
 }
 
 // GeneratedQuestion 是一次完整的题目生成结果。
 type GeneratedQuestion struct {
-	Title        string        `json:"title"`
-	AnswerFields []AnswerField `json:"answer_fields"`
+	Title        string                 `json:"title"`
+	AnswerFields []AnswerField          `json:"answer_fields"`
+	Meta         map[string]interface{} `json:"meta,omitempty"`
+}
+
+// GenerateQuestionFromInstance 在已实例化的 inst 上渲染题面并抽取答案（不再重复随机）。
+func GenerateQuestionFromInstance(p Problem, inst *Instance) (*GeneratedQuestion, error) {
+	if inst == nil {
+		return nil, fmt.Errorf("nil instance")
+	}
+	title, err := RenderTitle(p, inst)
+	if err != nil {
+		return nil, err
+	}
+	fields, err := ExtractAnswerWithMeta(p, inst)
+	if err != nil {
+		return nil, err
+	}
+	return &GeneratedQuestion{
+		Title:        title,
+		AnswerFields: fields,
+		Meta:         cloneMeta(p.Meta),
+	}, nil
+}
+
+func cloneMeta(m map[string]interface{}) map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	out := make(map[string]interface{}, len(m))
+	for k, v := range m {
+		out[k] = v
+	}
+	return out
 }
 
 // GenerateQuestion 从 DSL Problem 和种子生成一道题目：
@@ -28,16 +65,5 @@ func GenerateQuestion(p Problem, seedStr, serverSalt string) (*GeneratedQuestion
 	if err != nil {
 		return nil, err
 	}
-	title, err := RenderTitle(p, inst)
-	if err != nil {
-		return nil, err
-	}
-	fields, err := ExtractAnswerWithMeta(p, inst)
-	if err != nil {
-		return nil, err
-	}
-	return &GeneratedQuestion{
-		Title:        title,
-		AnswerFields: fields,
-	}, nil
+	return GenerateQuestionFromInstance(p, inst)
 }
