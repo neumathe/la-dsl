@@ -26,6 +26,37 @@ func EvaluateExpression(expr string, inst *Instance) (interface{}, error) {
 		return v, nil
 	}
 
+	// lambda_bmatrix(A)：将含参矩阵 A 以带 λ 符号的 bmatrix LaTeX 字符串渲染，
+	// 需要 inst.Vars 中已有 _lambda_param_row/_lambda_param_col/_lambda_param_constC。
+	// 供 Chapter4_4 类"齐次方程组有非零解，求 λ"题目的 Render 使用。
+	if strings.HasPrefix(expr, "lambda_bmatrix(") && strings.HasSuffix(expr, ")") {
+		arg := strings.TrimSpace(insideParens(expr))
+		vv, ok := inst.Vars[arg]
+		if !ok {
+			return nil, fmt.Errorf("lambda_bmatrix: unknown var %s", arg)
+		}
+		A, ok := vv.(*MatrixInt)
+		if !ok {
+			return nil, fmt.Errorf("lambda_bmatrix: expects matrix, got %T", vv)
+		}
+		paramRowV, ok1 := inst.Vars["_lambda_param_row"]
+		paramColV, ok2 := inst.Vars["_lambda_param_col"]
+		constCV, ok3 := inst.Vars["_lambda_param_constC"]
+		if !ok1 || !ok2 || !ok3 {
+			return nil, fmt.Errorf("lambda_bmatrix: lambda param metadata not found in instance")
+		}
+		toI64 := func(v interface{}) int64 {
+			switch t := v.(type) {
+			case int64:
+				return t
+			case int:
+				return int64(t)
+			}
+			return 0
+		}
+		return formatLambdaBmatrixTitle(A, toI64(paramRowV), toI64(paramColV), toI64(constCV)), nil
+	}
+
 	// scmul(a,b)：两个标量（int64 或 *big.Int）的乘积，返回 *big.Int
 	if strings.HasPrefix(expr, "scmul(") && strings.HasSuffix(expr, ")") {
 		ins := insideParens(expr)

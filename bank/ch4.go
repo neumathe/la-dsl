@@ -194,7 +194,7 @@ func buildChapter4_4() dsl.Problem {
 				},
 			},
 		},
-		Render: map[string]string{"A": "A"},
+		Render: map[string]string{"A": "lambda_bmatrix(A)"},
 		Answer: dsl.AnswerSchema{FieldDefs: []dsl.AnswerFieldDef{{ID: id, Expr: "lambda"}}},
 		Meta: map[string]interface{}{
 			"solution_zh": `**解题思路**：齐次方程组 $Ax=0$ 有非零解的充要条件是系数行列式为零，即 $\det(A)=0$。矩阵 $A$ 中含参数 $\lambda$（位于第 $(3,3)$ 位置），解方程 $\det(A)=0$ 即可求出 $\lambda$。

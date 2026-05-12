@@ -125,6 +125,32 @@ func formatLambdaCasesTitle(A *MatrixInt, paramRow int64, paramCol int64, constC
 	return `\begin{cases}` + strings.Join(rows, `\\`) + `\end{cases}`
 }
 
+// formatLambdaBmatrixTitle 将矩阵 A 渲染为带 λ 符号的 bmatrix LaTeX 字符串。
+// paramRow/paramCol 为 1-based 的 λ 所在行列，constC 为该位置的常数项（A(λ)=λ+constC）。
+func formatLambdaBmatrixTitle(A *MatrixInt, paramRow int64, paramCol int64, constC int64) string {
+	n := A.R
+	m := A.C
+	var rows []string
+	for i := 0; i < n; i++ {
+		var cols []string
+		for j := 0; j < m; j++ {
+			if int64(i+1) == paramRow && int64(j+1) == paramCol {
+				if constC == 0 {
+					cols = append(cols, `\lambda`)
+				} else if constC > 0 {
+					cols = append(cols, fmt.Sprintf(`\lambda+%d`, constC))
+				} else {
+					cols = append(cols, fmt.Sprintf(`\lambda%d`, constC))
+				}
+			} else {
+				cols = append(cols, fmt.Sprintf("%d", A.A[i][j]))
+			}
+		}
+		rows = append(rows, strings.Join(cols, "&"))
+	}
+	return `\begin{bmatrix}` + strings.Join(rows, `\\`) + `\end{bmatrix}`
+}
+
 func formatVmatrixTitle(m *MatrixInt) string {
 	var rows []string
 	for i := 0; i < m.R; i++ {
