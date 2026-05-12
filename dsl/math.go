@@ -18,6 +18,7 @@ func BareissDet(m *MatrixInt) *big.Int {
 			A[i][j] = big.NewInt(m.A[i][j])
 		}
 	}
+	sign := big.NewInt(1)
 	prev := big.NewInt(1)
 	for k := 0; k < n-1; k++ {
 		if A[k][k].Sign() == 0 {
@@ -32,6 +33,7 @@ func BareissDet(m *MatrixInt) *big.Int {
 				return big.NewInt(0)
 			}
 			A[k], A[swapIdx] = A[swapIdx], A[k]
+			sign.Neg(sign)
 		}
 		for i := k + 1; i < n; i++ {
 			for j := k + 1; j < n; j++ {
@@ -46,7 +48,7 @@ func BareissDet(m *MatrixInt) *big.Int {
 		}
 		prev = new(big.Int).Set(A[k][k])
 	}
-	return new(big.Int).Set(A[n-1][n-1])
+	return new(big.Int).Mul(sign, A[n-1][n-1])
 }
 
 // matrixRankRat 使用 big.Rat 做高斯消元计算矩阵秩
