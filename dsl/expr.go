@@ -1517,7 +1517,6 @@ func EvaluateExpression(expr string, inst *Instance) (interface{}, error) {
 		return formatCasesTitle(A, b), nil
 	}
 
-
 	if strings.HasPrefix(expr, "solve(") && strings.HasSuffix(expr, ")") {
 		ins := insideParens(expr)
 		parts := splitArgs(ins)
@@ -1838,7 +1837,7 @@ func EvaluateExpression(expr string, inst *Instance) (interface{}, error) {
 		return formatBasisLinearComboTitle(m), nil
 	}
 
-		if strings.Contains(expr, "*") {
+	if strings.Contains(expr, "*") {
 		parts := strings.Split(expr, "*")
 		if len(parts) == 2 {
 			left := strings.TrimSpace(parts[0])

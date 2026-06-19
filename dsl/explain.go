@@ -141,7 +141,7 @@ func buildQuestionExplanation(p Problem, inst *Instance, title string, fields []
 		})
 		// 把变量值也加入占位符池（若 Render 已有同名 key 则 Render 的 LaTeX 格式优先）。
 		if _, exists := renderStrings[name]; !exists {
-			renderStrings[name] = s
+			renderStrings[name] = placeholderPoolString(val)
 		}
 	}
 
@@ -163,7 +163,7 @@ func buildQuestionExplanation(p Problem, inst *Instance, title string, fields []
 			Value: s,
 		})
 		// 也把派生量的文本值加入占位符池，方便 solution_steps 引用。
-		renderStrings[name] = s
+		renderStrings[name] = placeholderPoolString(val)
 	}
 
 	for _, f := range fields {
@@ -196,6 +196,18 @@ func buildQuestionExplanation(p Problem, inst *Instance, title string, fields []
 	return out
 }
 
+// placeholderPoolString 返回用于 solution_zh 中 {{key}} 占位符替换的字符串。
+// 占位符出现在 LaTeX 上下文，因此矩阵/向量必须用 \begin{bmatrix} 形式，
+// 不能用 ValueToExplainString 的 "[a b c]; [..]" 调试形式（在 $...$ 内非法）。
+func placeholderPoolString(val interface{}) string {
+	switch val.(type) {
+	case *MatrixInt, *VectorInt:
+		return FormatValueForTitle(val)
+	default:
+		return ValueToExplainString(val)
+	}
+}
+
 // expandPlaceholders 将字符串中的 {{key}} 替换为 vars[key] 的值。
 func expandPlaceholders(s string, vars map[string]string) string {
 	for k, v := range vars {
@@ -218,14 +230,16 @@ func expandExprPlaceholders(s string, p Problem, inst *Instance) string {
 		if end == -1 {
 			break
 		}
-		end += start // absolute position
+		end += start             // absolute position
 		expr := s[start+7 : end] // extract expression between {{expr: and }}
 		val, err := EvaluateExpression(expr, inst)
 		var replacement string
 		if err != nil {
 			replacement = "⟨求值失败:" + expr + "⟩"
 		} else {
-			replacement = ValueToExplainString(val)
+			// {{expr:...}} 出现在 LaTeX 上下文：矩阵/向量结果（如 matmul）必须用
+			// \begin{bmatrix} 形式，否则会渲染成 "[a b]; [..]" 这种非法字符串。
+			replacement = placeholderPoolString(val)
 		}
 		s = s[:start] + replacement + s[end+2:]
 	}

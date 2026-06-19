@@ -49,22 +49,22 @@ func buildChapter5_1() dsl.Problem {
 		Render: map[string]string{"A": "A"},
 		Answer: dsl.AnswerSchema{FieldDefs: fds},
 		Meta: map[string]interface{}{
-			"solution_zh": `**解题思路**：求解矩阵特征值与特征向量，先由特征方程求特征值，再对每个特征值求解齐次线性方程组得到特征向量。
+			"solution_zh": `**解题思路：** 求解矩阵特征值与特征向量，先由特征方程求特征值，再对每个特征值求解齐次线性方程组得到特征向量。
 
-**步骤 1**：求特征值。由特征方程 $|\lambda E - A| = 0$，代入 $A = {{A}}$ 得：
-$$|\lambda E - A| = \begin{vmatrix} \lambda-{{expr:mget(A,1,1)}} & -{{expr:mget(A,1,2)}} & -{{expr:mget(A,1,3)}} \\ -{{expr:mget(A,2,1)}} & \lambda-{{expr:mget(A,2,2)}} & -{{expr:mget(A,2,3)}} \\ -{{expr:mget(A,3,1)}} & -{{expr:mget(A,3,2)}} & \lambda-{{expr:mget(A,3,3)}} \end{vmatrix} = 0$$
+**步骤 1：** 求特征值。由特征方程 $|\lambda E - A| = 0$，代入 $A = {{A}}$ 得：
+$$|\lambda E - A| = \begin{vmatrix} \lambda-({{expr:mget(A,1,1)}}) & -({{expr:mget(A,1,2)}}) & -({{expr:mget(A,1,3)}}) \\ -({{expr:mget(A,2,1)}}) & \lambda-({{expr:mget(A,2,2)}}) & -({{expr:mget(A,2,3)}}) \\ -({{expr:mget(A,3,1)}}) & -({{expr:mget(A,3,2)}}) & \lambda-({{expr:mget(A,3,3)}}) \end{vmatrix} = 0$$
 展开为关于 $\lambda$ 的三次方程，解得三个特征值：
 $$\lambda_1 = {{expr:eigenval(A,1)}},\quad \lambda_2 = {{expr:eigenval(A,2)}},\quad \lambda_3 = {{expr:eigenval(A,3)}}$$
 
-**步骤 2**：对每个特征值 $\lambda_i$，解齐次线性方程组 $(\lambda_i E - A)x = 0$ 求特征向量。
+**步骤 2：** 对每个特征值 $\lambda_i$，解齐次线性方程组 $(\lambda_i E - A)x = 0$ 求特征向量。
 
-当 $\lambda_1 = {{expr:eigenval(A,1)}}$ 时，$\lambda_1 E - A = \begin{bmatrix} {{expr:eigenval(A,1)}}-{{expr:mget(A,1,1)}} & -{{expr:mget(A,1,2)}} & -{{expr:mget(A,1,3)}} \\ -{{expr:mget(A,2,1)}} & {{expr:eigenval(A,1)}}-{{expr:mget(A,2,2)}} & -{{expr:mget(A,2,3)}} \\ -{{expr:mget(A,3,1)}} & -{{expr:mget(A,3,2)}} & {{expr:eigenval(A,1)}}-{{expr:mget(A,3,3)}} \end{bmatrix}$，行化简后求得特征向量 $\alpha_1 = ({{expr:eigenvec_comp(A,1,1)}},{{expr:eigenvec_comp(A,1,2)}},{{expr:eigenvec_comp(A,1,3)}})^T$。
+当 $\lambda_1 = {{expr:eigenval(A,1)}}$ 时，$\lambda_1 E - A = \begin{bmatrix} {{expr:eigenval(A,1)}}-({{expr:mget(A,1,1)}}) & -({{expr:mget(A,1,2)}}) & -({{expr:mget(A,1,3)}}) \\ -({{expr:mget(A,2,1)}}) & {{expr:eigenval(A,1)}}-({{expr:mget(A,2,2)}}) & -({{expr:mget(A,2,3)}}) \\ -({{expr:mget(A,3,1)}}) & -({{expr:mget(A,3,2)}}) & {{expr:eigenval(A,1)}}-({{expr:mget(A,3,3)}}) \end{bmatrix}$，行化简后求得特征向量 $\alpha_1 = ({{expr:eigenvec_comp(A,1,1)}},{{expr:eigenvec_comp(A,1,2)}},{{expr:eigenvec_comp(A,1,3)}})^T$。
 
 当 $\lambda_2 = {{expr:eigenval(A,2)}}$ 时，同理得 $\alpha_2 = ({{expr:eigenvec_comp(A,2,1)}},{{expr:eigenvec_comp(A,2,2)}},{{expr:eigenvec_comp(A,2,3)}})^T$。
 
 当 $\lambda_3 = {{expr:eigenval(A,3)}}$ 时，同理得 $\alpha_3 = ({{expr:eigenvec_comp(A,3,1)}},{{expr:eigenvec_comp(A,3,2)}},{{expr:eigenvec_comp(A,3,3)}})^T$。
 
-**步骤 3**：将三个特征值与对应的特征向量填入各空，特征值与特征向量可任意配对填写，特征向量允许整体乘以非零整数不影响判分。`,
+**步骤 3：** 将三个特征值与对应的特征向量填入各空，特征值与特征向量可任意配对填写，特征向量允许整体乘以非零整数不影响判分。`,
 		},
 	}
 }
@@ -110,22 +110,22 @@ func buildChapter5_2() dsl.Problem {
 		Render: map[string]string{"A": "A"},
 		Answer: dsl.AnswerSchema{FieldDefs: fds},
 		Meta: map[string]interface{}{
-			"solution_zh": `**解题思路**：求解矩阵特征值与特征向量，先由特征方程求特征值，再对每个特征值求解齐次线性方程组得到特征向量。
+			"solution_zh": `**解题思路：** 求解矩阵特征值与特征向量，先由特征方程求特征值，再对每个特征值求解齐次线性方程组得到特征向量。
 
-**步骤 1**：求特征值。由特征方程 $|\lambda E - A| = 0$，代入 $A = {{A}}$ 得：
-$$|\lambda E - A| = \begin{vmatrix} \lambda-{{expr:mget(A,1,1)}} & -{{expr:mget(A,1,2)}} & -{{expr:mget(A,1,3)}} \\ -{{expr:mget(A,2,1)}} & \lambda-{{expr:mget(A,2,2)}} & -{{expr:mget(A,2,3)}} \\ -{{expr:mget(A,3,1)}} & -{{expr:mget(A,3,2)}} & \lambda-{{expr:mget(A,3,3)}} \end{vmatrix} = 0$$
+**步骤 1：** 求特征值。由特征方程 $|\lambda E - A| = 0$，代入 $A = {{A}}$ 得：
+$$|\lambda E - A| = \begin{vmatrix} \lambda-({{expr:mget(A,1,1)}}) & -({{expr:mget(A,1,2)}}) & -({{expr:mget(A,1,3)}}) \\ -({{expr:mget(A,2,1)}}) & \lambda-({{expr:mget(A,2,2)}}) & -({{expr:mget(A,2,3)}}) \\ -({{expr:mget(A,3,1)}}) & -({{expr:mget(A,3,2)}}) & \lambda-({{expr:mget(A,3,3)}}) \end{vmatrix} = 0$$
 展开为关于 $\lambda$ 的三次方程，解得三个特征值：
 $$\lambda_1 = {{expr:eigenval(A,1)}},\quad \lambda_2 = {{expr:eigenval(A,2)}},\quad \lambda_3 = {{expr:eigenval(A,3)}}$$
 
-**步骤 2**：对每个特征值 $\lambda_i$，解齐次线性方程组 $(\lambda_i E - A)x = 0$ 求特征向量。
+**步骤 2：** 对每个特征值 $\lambda_i$，解齐次线性方程组 $(\lambda_i E - A)x = 0$ 求特征向量。
 
-当 $\lambda_1 = {{expr:eigenval(A,1)}}$ 时，$\lambda_1 E - A = \begin{bmatrix} {{expr:eigenval(A,1)}}-{{expr:mget(A,1,1)}} & -{{expr:mget(A,1,2)}} & -{{expr:mget(A,1,3)}} \\ -{{expr:mget(A,2,1)}} & {{expr:eigenval(A,1)}}-{{expr:mget(A,2,2)}} & -{{expr:mget(A,2,3)}} \\ -{{expr:mget(A,3,1)}} & -{{expr:mget(A,3,2)}} & {{expr:eigenval(A,1)}}-{{expr:mget(A,3,3)}} \end{bmatrix}$，行化简后求得特征向量 $\alpha_1 = ({{expr:eigenvec_comp(A,1,1)}},{{expr:eigenvec_comp(A,1,2)}},{{expr:eigenvec_comp(A,1,3)}})^T$。
+当 $\lambda_1 = {{expr:eigenval(A,1)}}$ 时，$\lambda_1 E - A = \begin{bmatrix} {{expr:eigenval(A,1)}}-({{expr:mget(A,1,1)}}) & -({{expr:mget(A,1,2)}}) & -({{expr:mget(A,1,3)}}) \\ -({{expr:mget(A,2,1)}}) & {{expr:eigenval(A,1)}}-({{expr:mget(A,2,2)}}) & -({{expr:mget(A,2,3)}}) \\ -({{expr:mget(A,3,1)}}) & -({{expr:mget(A,3,2)}}) & {{expr:eigenval(A,1)}}-({{expr:mget(A,3,3)}}) \end{bmatrix}$，行化简后求得特征向量 $\alpha_1 = ({{expr:eigenvec_comp(A,1,1)}},{{expr:eigenvec_comp(A,1,2)}},{{expr:eigenvec_comp(A,1,3)}})^T$。
 
 当 $\lambda_2 = {{expr:eigenval(A,2)}}$ 时，同理得 $\alpha_2 = ({{expr:eigenvec_comp(A,2,1)}},{{expr:eigenvec_comp(A,2,2)}},{{expr:eigenvec_comp(A,2,3)}})^T$。
 
 当 $\lambda_3 = {{expr:eigenval(A,3)}}$ 时，同理得 $\alpha_3 = ({{expr:eigenvec_comp(A,3,1)}},{{expr:eigenvec_comp(A,3,2)}},{{expr:eigenvec_comp(A,3,3)}})^T$。
 
-**步骤 3**：将三个特征值与对应的特征向量填入各空，特征值与特征向量可任意配对填写，特征向量允许整体乘以非零整数不影响判分。`,
+**步骤 3：** 将三个特征值与对应的特征向量填入各空，特征值与特征向量可任意配对填写，特征向量允许整体乘以非零整数不影响判分。`,
 		},
 	}
 }
@@ -146,10 +146,10 @@ func buildChapter5_3() dsl.Problem {
 		},
 		Derived: map[string]string{
 			"eig_text": "eigenval_list_text(A)",
-			"mu1": "diag_adj(A,1)",
-			"mu2": "diag_adj(A,2)",
-			"mu3": "diag_adj(A,3)",
-			"d4":  "det_quad_shift_diag(A,6,-2)",
+			"mu1":      "diag_adj(A,1)",
+			"mu2":      "diag_adj(A,2)",
+			"mu3":      "diag_adj(A,3)",
+			"d4":       "det_quad_shift_diag(A,6,-2)",
 		},
 		Render: map[string]string{"eig_text": "eig_text"},
 		Answer: dsl.AnswerSchema{FieldDefs: []dsl.AnswerFieldDef{
@@ -159,18 +159,18 @@ func buildChapter5_3() dsl.Problem {
 			{ID: ids[3], Expr: "d4", Layout: dsl.LayoutVectorComponent("det", 1, "\\det(A^2+6A-2I)")},
 		}},
 		Meta: map[string]interface{}{
-			"solution_zh": `**解题思路**：利用特征值的函数性质——若 $\lambda$ 是 $A$ 的特征值，则 $f(\lambda)$ 是 $f(A)$ 的特征值。
+			"solution_zh": `**解题思路：** 利用特征值的函数性质——若 $\lambda$ 是 $A$ 的特征值，则 $f(\lambda)$ 是 $f(A)$ 的特征值。
 
-**步骤 1**：矩阵 $A = {{A}}$ 为对角矩阵，三个特征值即为对角元：$\lambda_1 = {{expr:mget(A,1,1)}},\lambda_2 = {{expr:mget(A,2,2)}},\lambda_3 = {{expr:mget(A,3,3)}}$。
+**步骤 1：** 矩阵 $A = {{A}}$ 为对角矩阵，三个特征值即为对角元：$\lambda_1 = {{expr:mget(A,1,1)}},\lambda_2 = {{expr:mget(A,2,2)}},\lambda_3 = {{expr:mget(A,3,3)}}$。
 
-**步骤 2**：计算 $\det(A) = \lambda_1 \cdot \lambda_2 \cdot \lambda_3 = {{expr:det(A)}}$。由伴随矩阵公式 $A^* = \det(A) \cdot A^{-1}$，$A^*$ 的特征值为 $\mu_i = \dfrac{\det(A)}{\lambda_i}$：
-$$\mu_1 = \frac{{expr:det(A)}}{{expr:mget(A,1,1)}} = {{expr:diag_adj(A,1)}},\quad \mu_2 = \frac{{expr:det(A)}}{{expr:mget(A,2,2)}} = {{expr:diag_adj(A,2)}},\quad \mu_3 = \frac{{expr:det(A)}}{{expr:mget(A,3,3)}} = {{expr:diag_adj(A,3)}}$$
+**步骤 2：** 计算 $\det(A) = \lambda_1 \cdot \lambda_2 \cdot \lambda_3 = {{expr:det(A)}}$。由伴随矩阵公式 $A^* = \det(A) \cdot A^{-1}$，$A^*$ 的特征值为 $\mu_i = \dfrac{\det(A)}{\lambda_i}$：
+$$\mu_1 = \frac{ {{expr:det(A)}} }{ {{expr:mget(A,1,1)}} } = {{expr:diag_adj(A,1)}},\quad \mu_2 = \frac{ {{expr:det(A)}} }{ {{expr:mget(A,2,2)}} } = {{expr:diag_adj(A,2)}},\quad \mu_3 = \frac{ {{expr:det(A)}} }{ {{expr:mget(A,3,3)}} } = {{expr:diag_adj(A,3)}}$$
 
-**步骤 3**：对于多项式 $f(A) = A^2+6A-2E$，若 $\lambda_i$ 是 $A$ 的特征值，则 $f(\lambda_i) = \lambda_i^2+6\lambda_i-2$ 是 $f(A)$ 的特征值。分别计算：
-$$f(\lambda_1) = {{expr:mget(A,1,1)}}^2 + 6\cdot{{expr:mget(A,1,1)}} - 2,\quad f(\lambda_2) = {{expr:mget(A,2,2)}}^2 + 6\cdot{{expr:mget(A,2,2)}} - 2,\quad f(\lambda_3) = {{expr:mget(A,3,3)}}^2 + 6\cdot{{expr:mget(A,3,3)}} - 2$$
+**步骤 3：** 对于多项式 $f(A) = A^2+6A-2E$，若 $\lambda_i$ 是 $A$ 的特征值，则 $f(\lambda_i) = \lambda_i^2+6\lambda_i-2$ 是 $f(A)$ 的特征值。分别计算：
+$$f(\lambda_1) = ({{expr:mget(A,1,1)}})^2 + 6\cdot({{expr:mget(A,1,1)}}) - 2,\quad f(\lambda_2) = ({{expr:mget(A,2,2)}})^2 + 6\cdot({{expr:mget(A,2,2)}}) - 2,\quad f(\lambda_3) = ({{expr:mget(A,3,3)}})^2 + 6\cdot({{expr:mget(A,3,3)}}) - 2$$
 $$\det(A^2+6A-2E) = f(\lambda_1)\cdot f(\lambda_2)\cdot f(\lambda_3) = {{expr:det_quad_shift_diag(A,6,-2)}}$$
 
-**步骤 4**：综上，$A^*$ 的三个特征值为 {{expr:diag_adj(A,1)}}, {{expr:diag_adj(A,2)}}, {{expr:diag_adj(A,3)}}（顺序任意），$\det(A^2+6A-2E) = {{expr:det_quad_shift_diag(A,6,-2)}}$。`,
+**步骤 4：** 综上，$A^*$ 的三个特征值为 {{expr:diag_adj(A,1)}}, {{expr:diag_adj(A,2)}}, {{expr:diag_adj(A,3)}}（顺序任意），$\det(A^2+6A-2E) = {{expr:det_quad_shift_diag(A,6,-2)}}$。`,
 		},
 	}
 }
@@ -205,18 +205,18 @@ func buildChapter5_5() dsl.Problem {
 			{ID: ids[4], Expr: "e5", Judge: je, Layout: dsl.LayoutVectorComponent("lambda", 5, "eigenvalues")},
 		}},
 		Meta: map[string]interface{}{
-			"solution_zh": `**解题思路**：利用秩-零度定理——若 $R(A-\lambda_i E) = r_i$，则 $\lambda_i$ 作为特征值的几何重数（零度）为 $n - r_i = 5 - r_i$。
+			"solution_zh": `**解题思路：** 利用秩-零度定理——若 $R(A-\lambda_i E) = r_i$，则 $\lambda_i$ 作为特征值的几何重数（零度）为 $n - r_i = 5 - r_i$。
 
-**步骤 1**：题目给出的条件为 ${{conditions}}$，即三个关于 $A-\lambda_i E$ 的秩条件。
+**步骤 1：** 题目给出的条件为 ${{conditions}}$，即三个关于 $A-\lambda_i E$ 的秩条件。
 
-**步骤 2**：由每个秩条件 $R(A-\lambda_i E) = r_i$ 得 $\dim N(A-\lambda_i E) = 5 - r_i$，即特征值 $\lambda_i$ 的几何重数为 $5-r_i$：
+**步骤 2：** 由每个秩条件 $R(A-\lambda_i E) = r_i$ 得 $\dim N(A-\lambda_i E) = 5 - r_i$，即特征值 $\lambda_i$ 的几何重数为 $5-r_i$：
 - 由第一个秩条件得一个特征值，其重数为 $5 - r_1$
 - 由第二个秩条件得一个特征值，其重数为 $5 - r_2$
 - 由第三个秩条件得一个特征值，其重数为 $5 - r_3$
 
-**步骤 3**：将各特征值的重数相加验证总和为 $5$，确认没有遗漏的特征值（对于对称矩阵，几何重数等于代数重数）。
+**步骤 3：** 将各特征值的重数相加验证总和为 $5$，确认没有遗漏的特征值（对于对称矩阵，几何重数等于代数重数）。
 
-**步骤 4**：综合得五个特征值（从小到大排列）为 {{e1}}, {{e2}}, {{e3}}, {{e4}}, {{e5}}（顺序任意）。`,
+**步骤 4：** 综合得五个特征值（从小到大排列）为 {{e1}}, {{e2}}, {{e3}}, {{e4}}, {{e5}}（顺序任意）。`,
 		},
 	}
 }
@@ -251,15 +251,15 @@ func buildChapter5_4() dsl.Problem {
 			{ID: ids[3], Expr: "e4", Judge: je, Layout: dsl.LayoutVectorComponent("lambda", 4, "eigenvalues")},
 		}},
 		Meta: map[string]interface{}{
-			"solution_zh": `**解题思路**：利用秩、行和、行列式三个条件分别推出不同的特征值，共得到四个特征值。
+			"solution_zh": `**解题思路：** 利用秩、行和、行列式三个条件分别推出不同的特征值，共得到四个特征值。
 
-**步骤 1**：由 $R(A) = {{r}}$，可知 $\dim N(A) = 4 - {{r}} = 4-{{r}}$，即特征值 $\lambda = 0$ 的代数重数为 $4-{{r}}$。
+**步骤 1：** 由 $R(A) = {{r}}$，可知 $\dim N(A) = 4 - {{r}} = 4-{{r}}$，即特征值 $\lambda = 0$ 的代数重数为 $4-{{r}}$。
 
-**步骤 2**：由 $A$ 的各行元素之和都等于 ${{s}}$，可知 $A(1,1,1,1)^T = {{s}}(1,1,1,1)^T$，即 $\lambda = {{s}}$ 是一个特征值，对应特征向量为 $(1,1,1,1)^T$。
+**步骤 2：** 由 $A$ 的各行元素之和都等于 ${{s}}$，可知 $A(1,1,1,1)^T = {{s}}(1,1,1,1)^T$，即 $\lambda = {{s}}$ 是一个特征值，对应特征向量为 $(1,1,1,1)^T$。
 
-**步骤 3**：由 $|A+{{k}}E| = 0$，即 $|A-(-{{k}})E| = 0$，可知 $\lambda = -{{k}}$ 是 $A$ 的一个特征值。
+**步骤 3：** 由 $|A+{{k}}E| = 0$，即 $|A-(-{{k}})E| = 0$，可知 $\lambda = -{{k}}$ 是 $A$ 的一个特征值。
 
-**步骤 4**：综合以上，四个特征值分别为：$0$（$4-{{r}}$ 重）、${{s}}$（1 重）、$-{{k}}$（1 重），共计 $4-{{r}} + 1 + 1 = 4$ 个。从小到大排列为：{{e1}}, {{e2}}, {{e3}}, {{e4}}。`,
+**步骤 4：** 综合以上，四个特征值分别为：$0$（$4-{{r}}$ 重）、${{s}}$（1 重）、$-{{k}}$（1 重），共计 $4-{{r}} + 1 + 1 = 4$ 个。从小到大排列为：{{e1}}, {{e2}}, {{e3}}, {{e4}}。`,
 		},
 	}
 }
@@ -335,14 +335,14 @@ func buildChapter5_8() dsl.Problem {
 		Render: map[string]string{"S": "S"},
 		Answer: dsl.AnswerSchema{FieldDefs: fds},
 		Meta: map[string]interface{}{
-			"solution_zh": `**解题思路**：实对称矩阵必可正交相似对角化。先求特征值，再求特征向量并单位化得到正交矩阵 $Q$，最后验证 $Q^{-1}SQ = \Lambda$。
+			"solution_zh": `**解题思路：** 实对称矩阵必可正交相似对角化。先求特征值，再求特征向量并单位化得到正交矩阵 $Q$，最后验证 $Q^{-1}SQ = \Lambda$。
 
-**步骤 1**：求特征值。解特征方程 $|\lambda E - S| = 0$，代入 $S = {{S}}$ 得：
-$$|\lambda E - S| = \begin{vmatrix} \lambda-{{expr:mget(S,1,1)}} & -{{expr:mget(S,1,2)}} & -{{expr:mget(S,1,3)}} \\ -{{expr:mget(S,2,1)}} & \lambda-{{expr:mget(S,2,2)}} & -{{expr:mget(S,2,3)}} \\ -{{expr:mget(S,3,1)}} & -{{expr:mget(S,3,2)}} & \lambda-{{expr:mget(S,3,3)}} \end{vmatrix} = 0$$
+**步骤 1：** 求特征值。解特征方程 $|\lambda E - S| = 0$，代入 $S = {{S}}$ 得：
+$$|\lambda E - S| = \begin{vmatrix} \lambda-({{expr:mget(S,1,1)}}) & -({{expr:mget(S,1,2)}}) & -({{expr:mget(S,1,3)}}) \\ -({{expr:mget(S,2,1)}}) & \lambda-({{expr:mget(S,2,2)}}) & -({{expr:mget(S,2,3)}}) \\ -({{expr:mget(S,3,1)}}) & -({{expr:mget(S,3,2)}}) & \lambda-({{expr:mget(S,3,3)}}) \end{vmatrix} = 0$$
 解得三个特征值：
 $$\lambda_1 = {{expr:sym_eigenval(S,1)}},\quad \lambda_2 = {{expr:sym_eigenval(S,2)}},\quad \lambda_3 = {{expr:sym_eigenval(S,3)}}$$
 
-**步骤 2**：对每个特征值 $\lambda_i$，解 $(\lambda_i E - S)x = 0$ 得特征向量 $\alpha_i$。
+**步骤 2：** 对每个特征值 $\lambda_i$，解 $(\lambda_i E - S)x = 0$ 得特征向量 $\alpha_i$。
 
 当 $\lambda_1 = {{expr:sym_eigenval(S,1)}}$ 时，解 $(\lambda_1 E - S)x = 0$ 得 $\alpha_1 = ({{expr:sym_eigenvec_comp(S,1,1)}},{{expr:sym_eigenvec_comp(S,1,2)}},{{expr:sym_eigenvec_comp(S,1,3)}})^T$。
 
@@ -350,11 +350,11 @@ $$\lambda_1 = {{expr:sym_eigenval(S,1)}},\quad \lambda_2 = {{expr:sym_eigenval(S
 
 当 $\lambda_3 = {{expr:sym_eigenval(S,3)}}$ 时，解 $(\lambda_3 E - S)x = 0$ 得 $\alpha_3 = ({{expr:sym_eigenvec_comp(S,3,1)}},{{expr:sym_eigenvec_comp(S,3,2)}},{{expr:sym_eigenvec_comp(S,3,3)}})^T$。
 
-**步骤 3**：单位化。由于 $S$ 为实对称矩阵，不同特征值对应的特征向量天然正交。将每个 $\alpha_i$ 单位化得 $q_i = \dfrac{\alpha_i}{\|\alpha_i\|}$。
+**步骤 3：** 单位化。由于 $S$ 为实对称矩阵，不同特征值对应的特征向量天然正交。将每个 $\alpha_i$ 单位化得 $q_i = \dfrac{\alpha_i}{\|\alpha_i\|}$。
 
-**步骤 4**：构造正交矩阵 $Q = (q_1, q_2, q_3)$，即 $Q$ 的第 $i$ 列为单位化后的第 $i$ 个特征向量。$Q$ 的 9 个元素按行自上而下、从左到右依次填写。
+**步骤 4：** 构造正交矩阵 $Q = (q_1, q_2, q_3)$，即 $Q$ 的第 $i$ 列为单位化后的第 $i$ 个特征向量。$Q$ 的 9 个元素按行自上而下、从左到右依次填写。
 
-**步骤 5**：对角阵 $\Lambda = Q^{-1}SQ = \operatorname{diag}(\lambda_1,\lambda_2,\lambda_3)$，对角元依次为 {{expr:sym_eigenval(S,1)}}, {{expr:sym_eigenval(S,2)}}, {{expr:sym_eigenval(S,3)}}（与特征向量顺序对应）。`,
+**步骤 5：** 对角阵 $\Lambda = Q^{-1}SQ = \operatorname{diag}(\lambda_1,\lambda_2,\lambda_3)$，对角元依次为 {{expr:sym_eigenval(S,1)}}, {{expr:sym_eigenval(S,2)}}, {{expr:sym_eigenval(S,3)}}（与特征向量顺序对应）。`,
 		},
 	}
 }
@@ -389,19 +389,19 @@ func buildChapter5_6() dsl.Problem {
 		Render: map[string]string{"M": "M"},
 		Answer: dsl.AnswerSchema{FieldDefs: fds},
 		Meta: map[string]interface{}{
-			"solution_zh": `**解题思路**：将条件写成矩阵方程 $AM = C$，其中 $C$ 的三列均为 $\alpha_1$，从而 $A = CM^{-1}$。
+			"solution_zh": `**解题思路：** 将条件写成矩阵方程 $AM = C$，其中 $C$ 的三列均为 $\alpha_1$，从而 $A = CM^{-1}$。
 
-**步骤 1**：记 $M = (\alpha_1,\alpha_2,\alpha_3) = {{M}}$，则条件 $A\alpha_k = \alpha_1$（$k=1,2,3$）等价于：
+**步骤 1：** 记 $M = (\alpha_1,\alpha_2,\alpha_3) = {{M}}$，则条件 $A\alpha_k = \alpha_1$（$k=1,2,3$）等价于：
 $$AM = (\alpha_1,\alpha_1,\alpha_1) = C$$
 其中 $C$ 为三列相同的矩阵，每列均为 $\alpha_1 = ({{expr:mget(M,1,1)}},{{expr:mget(M,2,1)}},{{expr:mget(M,3,1)}})^T$。
 
-**步骤 2**：由 $AM = C$ 且 $M$ 可逆，得 $A = CM^{-1}$。先计算 $M$ 的逆矩阵：
+**步骤 2：** 由 $AM = C$ 且 $M$ 可逆，得 $A = CM^{-1}$。先计算 $M$ 的逆矩阵：
 $$M^{-1} = {{0Minv}}$$
 
-**步骤 3**：构造 $C$ 矩阵（三列均为 $\alpha_1$）：
+**步骤 3：** 构造 $C$ 矩阵（三列均为 $\alpha_1$）：
 $$C = {{1C}} = \begin{bmatrix} {{expr:mget(M,1,1)}} & {{expr:mget(M,1,1)}} & {{expr:mget(M,1,1)}} \\ {{expr:mget(M,2,1)}} & {{expr:mget(M,2,1)}} & {{expr:mget(M,2,1)}} \\ {{expr:mget(M,3,1)}} & {{expr:mget(M,3,1)}} & {{expr:mget(M,3,1)}} \end{bmatrix}$$
 
-**步骤 4**：计算 $A = CM^{-1}$：
+**步骤 4：** 计算 $A = CM^{-1}$：
 $$A = {{A}} = \begin{bmatrix} {{expr:mget(A,1,1)}} & {{expr:mget(A,1,2)}} & {{expr:mget(A,1,3)}} \\ {{expr:mget(A,2,1)}} & {{expr:mget(A,2,2)}} & {{expr:mget(A,2,3)}} \\ {{expr:mget(A,3,1)}} & {{expr:mget(A,3,2)}} & {{expr:mget(A,3,3)}} \end{bmatrix}$$
 九个元素按行依次填入各空。`,
 		},
@@ -451,14 +451,14 @@ func buildChapter5_7() dsl.Problem {
 		Render: map[string]string{"S": "S"},
 		Answer: dsl.AnswerSchema{FieldDefs: fds},
 		Meta: map[string]interface{}{
-			"solution_zh": `**解题思路**：对称矩阵可正交相似对角化。先求特征值和特征向量，将特征向量单位化后构成正交矩阵 $Q$。
+			"solution_zh": `**解题思路：** 对称矩阵可正交相似对角化。先求特征值和特征向量，将特征向量单位化后构成正交矩阵 $Q$。
 
-**步骤 1**：求特征值。解特征方程 $|\lambda E - S| = 0$，代入 $S = {{S}}$ 得：
-$$|\lambda E - S| = \begin{vmatrix} \lambda-{{expr:mget(S,1,1)}} & -{{expr:mget(S,1,2)}} & -{{expr:mget(S,1,3)}} \\ -{{expr:mget(S,2,1)}} & \lambda-{{expr:mget(S,2,2)}} & -{{expr:mget(S,2,3)}} \\ -{{expr:mget(S,3,1)}} & -{{expr:mget(S,3,2)}} & \lambda-{{expr:mget(S,3,3)}} \end{vmatrix} = 0$$
+**步骤 1：** 求特征值。解特征方程 $|\lambda E - S| = 0$，代入 $S = {{S}}$ 得：
+$$|\lambda E - S| = \begin{vmatrix} \lambda-({{expr:mget(S,1,1)}}) & -({{expr:mget(S,1,2)}}) & -({{expr:mget(S,1,3)}}) \\ -({{expr:mget(S,2,1)}}) & \lambda-({{expr:mget(S,2,2)}}) & -({{expr:mget(S,2,3)}}) \\ -({{expr:mget(S,3,1)}}) & -({{expr:mget(S,3,2)}}) & \lambda-({{expr:mget(S,3,3)}}) \end{vmatrix} = 0$$
 展开为关于 $\lambda$ 的三次方程，解得三个特征值：
 $$\lambda_1 = {{expr:sym_eigenval(S,1)}},\quad \lambda_2 = {{expr:sym_eigenval(S,2)}},\quad \lambda_3 = {{expr:sym_eigenval(S,3)}}$$
 
-**步骤 2**：对每个特征值 $\lambda_i$，解 $(\lambda_i E - S)x = 0$ 得特征向量 $\alpha_i$。
+**步骤 2：** 对每个特征值 $\lambda_i$，解 $(\lambda_i E - S)x = 0$ 得特征向量 $\alpha_i$。
 
 当 $\lambda_1 = {{expr:sym_eigenval(S,1)}}$ 时，$\alpha_1 = ({{expr:sym_eigenvec_comp(S,1,1)}},{{expr:sym_eigenvec_comp(S,1,2)}},{{expr:sym_eigenvec_comp(S,1,3)}})^T$。
 
@@ -466,9 +466,9 @@ $$\lambda_1 = {{expr:sym_eigenval(S,1)}},\quad \lambda_2 = {{expr:sym_eigenval(S
 
 当 $\lambda_3 = {{expr:sym_eigenval(S,3)}}$ 时，$\alpha_3 = ({{expr:sym_eigenvec_comp(S,3,1)}},{{expr:sym_eigenvec_comp(S,3,2)}},{{expr:sym_eigenvec_comp(S,3,3)}})^T$。
 
-**步骤 3**：由于 $S$ 是实对称矩阵，不同特征值对应的特征向量天然正交。将每个特征向量单位化得 $q_i = \dfrac{\alpha_i}{\|\alpha_i\|}$。
+**步骤 3：** 由于 $S$ 是实对称矩阵，不同特征值对应的特征向量天然正交。将每个特征向量单位化得 $q_i = \dfrac{\alpha_i}{\|\alpha_i\|}$。
 
-**步骤 4**：构造正交矩阵 $Q = (q_1, q_2, q_3)$，$Q$ 的第 $i$ 列为单位化后的第 $i$ 个特征向量。$Q$ 的 9 个元素按行自上而下、从左到右依次填入各空。`,
+**步骤 4：** 构造正交矩阵 $Q = (q_1, q_2, q_3)$，$Q$ 的第 $i$ 列为单位化后的第 $i$ 个特征向量。$Q$ 的 9 个元素按行自上而下、从左到右依次填入各空。`,
 		},
 	}
 }

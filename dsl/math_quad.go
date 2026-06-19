@@ -9,9 +9,9 @@ import (
 type SymmetricDefClass int
 
 const (
-	SymDefPD SymmetricDefClass = iota // 正定
-	SymDefND                          // 负定
-	SymDefInd                         // 不定（或半正定/半负定等非上述两类）
+	SymDefPD  SymmetricDefClass = iota // 正定
+	SymDefND                           // 负定
+	SymDefInd                          // 不定（或半正定/半负定等非上述两类）
 )
 
 func principalMinorDet(m *MatrixInt, k int) *big.Int {

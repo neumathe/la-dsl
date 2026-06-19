@@ -31,6 +31,31 @@ func integralInnerProduct(f, g []int64) *big.Rat {
 	return result
 }
 
+// integralInnerProductRat computes <f,g> = integral(-1,1) f*g dx for polynomials
+// with rational coefficients (constant first), keeping everything exact in *big.Rat.
+// <x^n,x^m> = 2/(n+m+1) when n+m even, 0 when odd.
+func integralInnerProductRat(f, g []*big.Rat) *big.Rat {
+	result := new(big.Rat)
+	for i, ai := range f {
+		if ai == nil || ai.Sign() == 0 {
+			continue
+		}
+		for j, bj := range g {
+			if bj == nil || bj.Sign() == 0 {
+				continue
+			}
+			n := i + j
+			if n%2 == 1 {
+				continue
+			}
+			term := new(big.Rat).Mul(ai, bj)
+			term.Mul(term, new(big.Rat).SetFrac(big.NewInt(2), big.NewInt(int64(n+1))))
+			result.Add(result, term)
+		}
+	}
+	return result
+}
+
 // polynomialSchmidt performs Gram-Schmidt orthogonalization under the
 // integral inner product <f,g> = integral(-1,1) f*g dx.
 //
@@ -51,12 +76,12 @@ func polynomialSchmidt(polys [][]int64) [][]*big.Rat {
 		// Subtract projections onto previous orthogonal polynomials
 		for j := 0; j < k; j++ {
 			gj := result[j]
-			// <f_k, g_j>
-			fkInt := ratPolyToIntPoly(fk)
-			gjInt := ratPolyToIntPoly(gj)
-			ip := integralInnerProduct(fkInt, gjInt)
+			// 直接在有理数上计算内积，避免先用 ratPolyToIntPoly 把 fk/gj 各自乘以
+			// 其分母 LCM 后再求内积——那样会让 <f_k,g_j> 与 <g_j,g_j> 引入互不抵消的
+			// 缩放因子 (L_fk/L_gj)，导致投影系数偏大、正交化结果不再正交。
+			ip := integralInnerProductRat(fk, gj)
 			// <g_j, g_j>
-			norm := integralInnerProduct(gjInt, gjInt)
+			norm := integralInnerProductRat(gj, gj)
 			// projection = (ip/norm) * g_j
 			if norm.Sign() == 0 {
 				continue
@@ -76,36 +101,6 @@ func polynomialSchmidt(polys [][]int64) [][]*big.Rat {
 		}
 
 		result[k] = fk
-	}
-	return result
-}
-
-// ratPolyToIntPoly converts a []*big.Rat polynomial to []int64
-// by finding the LCM of denominators and multiplying through.
-func ratPolyToIntPoly(ratCoeffs []*big.Rat) []int64 {
-	// Find LCM of denominators
-	lcm := big.NewInt(1)
-	for _, r := range ratCoeffs {
-		if r == nil {
-			continue
-		}
-		d := r.Denom()
-		if d.Sign() != 0 {
-			newLcm := new(big.Int)
-			gcd := new(big.Int).GCD(nil, nil, lcm, d)
-			newLcm.Mul(lcm, d)
-			newLcm.Quo(newLcm, gcd)
-			lcm = newLcm
-		}
-	}
-	result := make([]int64, len(ratCoeffs))
-	for i, r := range ratCoeffs {
-		if r == nil {
-			result[i] = 0
-			continue
-		}
-		scaled := new(big.Rat).Mul(r, new(big.Rat).SetInt(lcm))
-		result[i] = scaled.Num().Int64()
 	}
 	return result
 }

@@ -494,8 +494,10 @@ func genMatrixLambdaLinearDetZero(rng *rand.Rand, v Variable, inst *Instance) (i
 				base.A[i][j] = int64(rng.Intn(entryMax-entryMin+1) + entryMin)
 			}
 		}
-		// 参数位置常数项 c（表达式为 λ + c，前端可格式化成 λ - k）
-		constC := int64(rng.Intn(entryMax-entryMin+1) + entryMin)
+		// 参数位置常数项 c：固定为 0，使该位置的元素恰为 λ 本身（即 a_{ij}=λ）。
+		// 这样题面方程组、矩阵题面与解析（均按 a_{ij}=λ 展开）三者完全一致，
+		// 避免出现 (λ+c) 仿射项带来的题面/解析不一致问题。
+		constC := int64(0)
 		base.A[paramRow-1][paramCol-1] = constC // 这是 λ=0 时的值
 
 		// d(λ) 只在该元素上线性依赖 λ
@@ -691,7 +693,6 @@ func genMatrixUpperTriangular(rng *rand.Rand, v Variable) (interface{}, error) {
 	}
 	return nil, errors.New("upper_triangular: failed non-singular")
 }
-
 
 func genMatrixUpperTriangularNonzeroDiag(rng *rand.Rand, v Variable) (interface{}, error) {
 	r := v.Rows

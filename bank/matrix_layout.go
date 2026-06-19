@@ -17,7 +17,7 @@ func MatrixFieldDefsRectIDs(ids []string, offset, rows, cols int, matrixVar, gro
 	fds := make([]dsl.AnswerFieldDef, 0, rows*cols)
 	for i := 1; i <= rows; i++ {
 		for j := 1; j <= cols; j++ {
-			k := offset + (i-1)*cols + (j-1)
+			k := offset + (i-1)*cols + (j - 1)
 			fds = append(fds, dsl.AnswerFieldDef{
 				ID:     ids[k],
 				Expr:   fmt.Sprintf("mget(%s,%d,%d)", matrixVar, i, j),

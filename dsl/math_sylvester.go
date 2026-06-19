@@ -12,9 +12,10 @@ import (
 // at one diagonal position S[tRow][tRow].
 //
 // Sylvester's criterion:
-//   Δ₁ > 0 (constant — must hold for the fixed diagonal entries)
-//   Δ₂ > 0 (constant when t is at row 2+; t-independent when at row 0 or 1)
-//   Δ₃ = cofactor · t + det(S₀) > 0
+//
+//	Δ₁ > 0 (constant — must hold for the fixed diagonal entries)
+//	Δ₂ > 0 (constant when t is at row 2+; t-independent when at row 0 or 1)
+//	Δ₃ = cofactor · t + det(S₀) > 0
 //
 // Since the cofactor of the t-position is positive (by construction Δ₂ > 0),
 // Δ₃ > 0 gives a single-sided bound: t > lower.
@@ -32,7 +33,7 @@ func SylvesterPositiveRangeSingleT(Sbase *MatrixInt, tRow int) (lower *big.Rat, 
 	}
 
 	// Δ₂ = S[1][1]·S[2][2] - S[1][2]²
-	d2 := int64(Sbase.A[0][0]) * int64(Sbase.A[1][1]) - int64(Sbase.A[0][1])*int64(Sbase.A[0][1])
+	d2 := int64(Sbase.A[0][0])*int64(Sbase.A[1][1]) - int64(Sbase.A[0][1])*int64(Sbase.A[0][1])
 	if d2 <= 0 {
 		return nil, nil, fmt.Errorf("Δ₂ = %d ≤ 0", d2)
 	}
@@ -312,7 +313,8 @@ func formatQuadraticExprWithParam(Sbase *MatrixInt, inst *Instance) string {
 // where S[3][3] = t depends on parameter t, and all other entries are fixed integers.
 // The eigenvalues λ₁,λ₂,λ₃ (standard-form coefficients) are known.
 // Parameter t can be deduced from tr(S) = λ₁+λ₂+λ₃:
-//   t = (λ₁+λ₂+λ₃) - S[1][1] - S[2][2]
+//
+//	t = (λ₁+λ₂+λ₃) - S[1][1] - S[2][2]
 //
 // Stores _param_Q, _param_Lambda, _param_lambdas, _param_t_val in inst.Vars.
 func genMatrixParamOrthogonalDiag(rng *rand.Rand, v Variable, inst *Instance) (interface{}, error) {

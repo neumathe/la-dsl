@@ -4,8 +4,8 @@ package dsl
 const AnswerLayoutSchema = "la-dsl.answer_layout.v1"
 
 const (
-	LayoutKindMatrixCell       = "matrix_cell"        // 矩阵第 (row,col) 格，1-based，与 mget 一致
-	LayoutKindVectorComponent  = "vector_component"   // 向量第 index 个分量，1-based，与 v[k] 一致
+	LayoutKindMatrixCell      = "matrix_cell"      // 矩阵第 (row,col) 格，1-based，与 mget 一致
+	LayoutKindVectorComponent = "vector_component" // 向量第 index 个分量，1-based，与 v[k] 一致
 )
 
 // AnswerFieldLayout 描述单个填空在版式中的语义位置，供 App/Web 渲染矩阵格/向量分量格。

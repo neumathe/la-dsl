@@ -12,10 +12,10 @@ import (
 // such that the system has infinitely many solutions when λ and μ take specific integer values.
 //
 // Strategy:
-//   1. Generate first 2 rows randomly (full rank 2×3)
-//   2. Make row 3 a linear combination of rows 1 and 2, with λ replacing one coefficient
-//   3. Choose b such that when λ makes rank(A)=2, b is in the column space (rank(A|b)=2 too)
-//   4. Specifically: b[3] = μ which equals the same linear combo of b[1], b[2]
+//  1. Generate first 2 rows randomly (full rank 2×3)
+//  2. Make row 3 a linear combination of rows 1 and 2, with λ replacing one coefficient
+//  3. Choose b such that when λ makes rank(A)=2, b is in the column space (rank(A|b)=2 too)
+//  4. Specifically: b[3] = μ which equals the same linear combo of b[1], b[2]
 //
 // The specific values λ_val and μ_val are stored in inst.Vars.
 // The instantiated matrix (with λ_val, μ_val substituted) is returned.

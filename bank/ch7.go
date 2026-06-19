@@ -121,8 +121,8 @@ func buildChapter7_10() dsl.Problem {
 			`在 $\mathbb{R}[x]_3$ 中，由基 $1,x,x^2$ 到基 $\beta_1={{b1}},\beta_2={{b2}},\beta_3={{b3}}$ 的过渡矩阵 $P$ 及多项式 $p(x)={{px}}$ 在基 $\beta$ 下坐标（过渡矩阵第一行：{{blank:%s}} {{blank:%s}} {{blank:%s}}；第二行：{{blank:%s}} {{blank:%s}} {{blank:%s}}；第三行：{{blank:%s}} {{blank:%s}} {{blank:%s}}；坐标：{{blank:%s}} {{blank:%s}} {{blank:%s}}）`,
 			ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7], ids[8], ids[9], ids[10], ids[11]),
 		Variables: map[string]dsl.Variable{
-			"B":  {Kind: "matrix", Rows: 3, Cols: 3, Generator: map[string]interface{}{"rule": "upper_triangular_nonzero_diag", "min": -4, "max": 4}},
-			"p":  {Kind: "vector", Size: 3, Generator: map[string]interface{}{"rule": "range", "min": -4, "max": 4}},
+			"B": {Kind: "matrix", Rows: 3, Cols: 3, Generator: map[string]interface{}{"rule": "upper_triangular_nonzero_diag", "min": -4, "max": 4}},
+			"p": {Kind: "vector", Size: 3, Generator: map[string]interface{}{"rule": "range", "min": -4, "max": 4}},
 		},
 		Derived: map[string]string{
 			"coord": "solve(B,p)",
@@ -201,9 +201,9 @@ func buildChapter7_9() dsl.Problem {
 		},
 		Derived: map[string]string{
 			"basis_text": "basis_linear_combo_title(P)",
-			"0Pi":  "inv(P)",
-			"0PiA": "matmul(0Pi, A)",
-			"Tnew": "matmul(0PiA, P)",
+			"0Pi":        "inv(P)",
+			"0PiA":       "matmul(0Pi, A)",
+			"Tnew":       "matmul(0PiA, P)",
 		},
 		Render: map[string]string{"A": "A", "basis_text": "basis_text"},
 		Answer: dsl.AnswerSchema{FieldDefs: fds},
@@ -394,6 +394,7 @@ func buildChapter7_5_1() dsl.Problem {
 		Variables: map[string]dsl.Variable{
 			"A": {Kind: "matrix", Rows: 4, Cols: 4, Generator: map[string]interface{}{"rule": "range", "min": -5, "max": 5}},
 		},
+		Render: map[string]string{"A": "A"},
 		Answer: dsl.AnswerSchema{FieldDefs: []dsl.AnswerFieldDef{
 			{ID: ids[0], Expr: "space_rank(A)"},
 			{ID: ids[1], Expr: "basis_index(A,1)"},
@@ -416,15 +417,15 @@ func buildChapter7_5_1() dsl.Problem {
 
 第三步：统计 RREF 中主元（pivot，即每行首个非零元为 1 的位置）的个数，即为 A 的秩 r = {{expr:space_rank(A)}}。这就是向量空间的维数。
 
-第四步：RREF 中主元所在的列号，对应原矩阵 A 中的极大线性无关组的列下标。这些列号通过 basis_index(A, k) 给出。
-  第 1 个主元列：α_{basis_index(A,1)}
-  第 2 个主元列：α_{basis_index(A,2)}
-  第 3 个主元列：α_{basis_index(A,3)}
-  第 4 个主元列：α_{basis_index(A,4)}（如果秩 < 4，则填 0 表示无此基向量）
+第四步：RREF 中主元所在的列号，对应原矩阵 A 中的极大线性无关组的列下标。
+  第 1 个主元列：α_{{expr:basis_index(A,1)}}
+  第 2 个主元列：α_{{expr:basis_index(A,2)}}
+  第 3 个主元列：α_{{expr:basis_index(A,3)}}
+  第 4 个主元列：α_{{expr:basis_index(A,4)}}（如果秩 < 4，则填 0 表示无此基向量）
 
 第五步：从 A 中选取这些列构成一组基，不足的列用 0 补齐。
 
-答案：维数 = {{expr:space_rank(A)}}，基下标依次为 α_{basis_index(A,1)}, α_{basis_index(A,2)}, ...，不足填 0`,
+答案：维数 = {{expr:space_rank(A)}}，基下标依次为 α_{{expr:basis_index(A,1)}}, α_{{expr:basis_index(A,2)}}, α_{{expr:basis_index(A,3)}}, α_{{expr:basis_index(A,4)}}（不足填 0）`,
 		},
 	}
 }
@@ -512,6 +513,7 @@ func buildChapter7_5_3() dsl.Problem {
 		Variables: map[string]dsl.Variable{
 			"A": {Kind: "matrix", Rows: 4, Cols: 4, Generator: map[string]interface{}{"rule": "range", "min": -4, "max": 4}},
 		},
+		Render: map[string]string{"A": "A"},
 		Answer: dsl.AnswerSchema{FieldDefs: []dsl.AnswerFieldDef{
 			{ID: ids[0], Expr: "space_rank(A)"},
 			{ID: ids[1], Expr: "basis_index(A,1)"},
@@ -535,12 +537,12 @@ func buildChapter7_5_3() dsl.Problem {
 第三步：RREF 中主元的个数即为 A 的秩 r = {{expr:space_rank(A)}}，这也是向量空间的维数。
 
 第四步：RREF 中主元所在列号给出原矩阵 A 中极大线性无关组的列下标：
-  第 1 个基向量：α_{basis_index(A,1)}
-  第 2 个基向量：α_{basis_index(A,2)}
-  第 3 个基向量：α_{basis_index(A,3)}
-  第 4 个基向量：α_{basis_index(A,4)}（若秩 < 4 则填 0）
+  第 1 个基向量：α_{{expr:basis_index(A,1)}}
+  第 2 个基向量：α_{{expr:basis_index(A,2)}}
+  第 3 个基向量：α_{{expr:basis_index(A,3)}}
+  第 4 个基向量：α_{{expr:basis_index(A,4)}}（若秩 < 4 则填 0）
 
-答案：维数 = {{expr:space_rank(A)}}，基下标依次为 basis_index(A,1), basis_index(A,2), ...，不足填 0`,
+答案：维数 = {{expr:space_rank(A)}}，基下标依次为 α_{{expr:basis_index(A,1)}}, α_{{expr:basis_index(A,2)}}, α_{{expr:basis_index(A,3)}}, α_{{expr:basis_index(A,4)}}（不足填 0）`,
 		},
 	}
 }
@@ -649,9 +651,9 @@ func buildChapter7_8() dsl.Problem {
 			"b1":        "col(B,1)",
 			"b2":        "col(B,2)",
 			"b3":        "col(B,3)",
-			"0Bi":    "inv(B)",
-			"0BiA0":  "matmul(0Bi, A0)",
-			"Tnew":   "matmul(0BiA0, B)",
+			"0Bi":       "inv(B)",
+			"0BiA0":     "matmul(0Bi, A0)",
+			"Tnew":      "matmul(0BiA0, B)",
 		},
 		Render: map[string]string{"T_formula": "T_formula", "b1": "b1", "b2": "b2", "b3": "b3"},
 		Answer: dsl.AnswerSchema{FieldDefs: fds},

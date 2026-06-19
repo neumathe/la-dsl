@@ -79,7 +79,7 @@ func TestSolutionZhPlaceholderExpansion(t *testing.T) {
 		},
 		Derived: map[string]string{"d": "det(A)", "vA": "vmatrix_title(A)"},
 		Render:  map[string]string{"vA": "vA"},
-		Answer: AnswerSchema{FieldDefs: []AnswerFieldDef{{ID: "f1", Expr: "d"}}},
+		Answer:  AnswerSchema{FieldDefs: []AnswerFieldDef{{ID: "f1", Expr: "d"}}},
 		Meta: map[string]interface{}{
 			"solution_zh": `行列式 $D={{vA}}$ 的值为 {{d}}，填空 f1 的答案为 {{f1}}。`,
 		},
@@ -178,18 +178,16 @@ func TestSolutionZhDerivedKeyExpansion(t *testing.T) {
 	if ex.Solution == "" {
 		t.Fatal("solution_zh is empty")
 	}
-	// {{AB}} 应被 Derived 值替换（ValueToExplainString 格式）
-	abDerived := ""
-	for _, d := range ex.Derived {
-		if d.Name == "AB" {
-			abDerived = d.Value
-		}
+	// {{AB}} 应被展开为矩阵的 LaTeX（\begin{bmatrix}）形式，而非调试用的
+	// "[a b]; [..]" 文本（后者在 $...$ 数学环境内非法）。
+	if strings.Contains(ex.Solution, "{{AB}}") {
+		t.Fatalf("solution_zh should expand {{AB}} placeholder, got: %q", ex.Solution)
 	}
-	if abDerived == "" {
-		t.Fatal("missing derived AB")
+	if !strings.Contains(ex.Solution, `\begin{bmatrix}`) {
+		t.Fatalf("solution_zh should contain matrix in LaTeX bmatrix form, got: %q", ex.Solution)
 	}
-	if !strings.Contains(ex.Solution, abDerived) {
-		t.Fatalf("solution_zh should contain derived AB value %q, got: %q", abDerived, ex.Solution)
+	if !strings.Contains(ex.Solution, `4&7`) || !strings.Contains(ex.Solution, `7&12`) {
+		t.Fatalf("solution_zh should contain AB entries in LaTeX form, got: %q", ex.Solution)
 	}
 	// 各 field ID 占位符也应展开为期望值
 	for _, step := range ex.AnswerSteps {

@@ -9,8 +9,8 @@ package dsl
 //   - "permutation_multiset"：同 PermGroup 的多个空为一组数值，判分与顺序无关（multiset 相等）
 //   - "eigen_pair"：同 EigenGroup 的多个空共同描述若干特征对 (λ_j, v_j)，
 //     用户可按任意顺序填写；判分要求：
-//       1) 每列 j 的向量 v_j 非零，且 MatrixVar · v_j == λ_j · v_j
-//       2) 用户给出的全部 λ 与标准答案特征值 multiset 相等
+//     1) 每列 j 的向量 v_j 非零，且 MatrixVar · v_j == λ_j · v_j
+//     2) 用户给出的全部 λ 与标准答案特征值 multiset 相等
 //     RefLambdaGroup 允许 vec-only 的组（如 Q 或 α 的第二分组）借用另一组的 λ 字段。
 type AnswerJudgeSpec struct {
 	Kind string `json:"kind,omitempty"`

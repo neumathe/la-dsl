@@ -14,7 +14,8 @@ import (
 //
 // Strategy: pick 3 distinct nonzero eigenvalues λ₁,λ₂,λ₃ with multiplicities
 // m₁,m₂,m₃ (summing to 5). The rank conditions are:
-//   R(A-λᵢI) = 5-mᵢ  (since nullity(A-λᵢI) = mᵢ)
+//
+//	R(A-λᵢI) = 5-mᵢ  (since nullity(A-λᵢI) = mᵢ)
 //
 // Stores _eigen_rank_lambdas, _eigen_rank_mults, _eigen_rank_ranks in inst.Vars.
 func genScalarEigenRankInference5(rng *rand.Rand, v Variable, inst *Instance) (interface{}, error) {
@@ -197,10 +198,13 @@ func formatRankConditionList(lambdas []int64, ranks []int64) string {
 	for i := 0; i < len(lambdas); i++ {
 		l := lambdas[i]
 		r := ranks[i]
+		// 特征值 λ 对应的秩条件是 R(A - λE) = r：
+		//   λ>0 → R(A-λE)；λ<0 → R(A+|λ|E)。
+		// 不能直接按 λ 的符号拼成 "A+λ"，否则会把符号反过来。
 		if l < 0 {
-			parts = append(parts, fmt.Sprintf("R(A%dE)=%d", l, r))
+			parts = append(parts, fmt.Sprintf("R(A+%dE)=%d", -l, r))
 		} else {
-			parts = append(parts, fmt.Sprintf("R(A+%dE)=%d", l, r))
+			parts = append(parts, fmt.Sprintf("R(A-%dE)=%d", l, r))
 		}
 	}
 	return strings.Join(parts, "，")

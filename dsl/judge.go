@@ -78,8 +78,8 @@ func toRat(v interface{}) (*big.Rat, error) {
 func NormalizeUserAnswer(s string) string {
 	s = strings.TrimSpace(s)
 	s = strings.ReplaceAll(s, "\u2212", "-") // minus sign
-	s = strings.ReplaceAll(s, "－", "-")     // fullwidth hyphen-minus
-	s = strings.ReplaceAll(s, "⁻", "-")     // superscript minus
+	s = strings.ReplaceAll(s, "－", "-")      // fullwidth hyphen-minus
+	s = strings.ReplaceAll(s, "⁻", "-")      // superscript minus
 	s = strings.ReplaceAll(s, "，", "")
 	s = strings.ReplaceAll(s, ",", "")
 	s = strings.ReplaceAll(s, " ", "")
@@ -87,7 +87,7 @@ func NormalizeUserAnswer(s string) string {
 	s = strings.ReplaceAll(s, "（", "(")
 	s = strings.ReplaceAll(s, "）", ")")
 	s = strings.ReplaceAll(s, "\u2044", "/") // fraction slash ⁄
-	s = strings.ReplaceAll(s, "／", "/")       // fullwidth solidus
+	s = strings.ReplaceAll(s, "／", "/")      // fullwidth solidus
 	return strings.TrimSpace(s)
 }
 

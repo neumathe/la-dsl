@@ -56,9 +56,6 @@ func FormatValueForTitle(v interface{}) string {
 	}
 }
 
-
-
-
 func formatLambdaCasesTitle(A *MatrixInt, paramRow int64, paramCol int64, constC int64) string {
 	n := A.R
 	m := A.C
@@ -78,16 +75,16 @@ func formatLambdaCasesTitle(A *MatrixInt, paramRow int64, paramCol int64, constC
 					}
 				} else if constC > 0 {
 					if isFirst {
-						parts = append(parts, fmt.Sprintf("\\lambda+%d%s", constC, xv))
+						parts = append(parts, fmt.Sprintf("(\\lambda+%d)%s", constC, xv))
 					} else {
-						parts = append(parts, fmt.Sprintf("+\\lambda+%d%s", constC, xv))
+						parts = append(parts, fmt.Sprintf("+(\\lambda+%d)%s", constC, xv))
 					}
 				} else {
 					// constC < 0, render as λ-k
 					if isFirst {
-						parts = append(parts, fmt.Sprintf("\\lambda%d%s", constC, xv))
+						parts = append(parts, fmt.Sprintf("(\\lambda%d)%s", constC, xv))
 					} else {
-						parts = append(parts, fmt.Sprintf("+\\lambda%d%s", constC, xv))
+						parts = append(parts, fmt.Sprintf("+(\\lambda%d)%s", constC, xv))
 					}
 				}
 				continue
@@ -100,15 +97,15 @@ func formatLambdaCasesTitle(A *MatrixInt, paramRow int64, paramCol int64, constC
 				if coef == 1 {
 					parts = append(parts, xv)
 				} else if coef == -1 {
-					parts = append(parts, "-" + xv)
+					parts = append(parts, "-"+xv)
 				} else {
 					parts = append(parts, fmt.Sprintf("%d%s", coef, xv))
 				}
 			} else {
 				if coef == 1 {
-					parts = append(parts, "+" + xv)
+					parts = append(parts, "+"+xv)
 				} else if coef == -1 {
-					parts = append(parts, "-" + xv)
+					parts = append(parts, "-"+xv)
 				} else if coef > 0 {
 					parts = append(parts, fmt.Sprintf("+%d%s", coef, xv))
 				} else {
@@ -220,15 +217,15 @@ func formatCasesTitle(A *MatrixInt, b *VectorInt) string {
 				if coef == 1 {
 					parts = append(parts, xv)
 				} else if coef == -1 {
-					parts = append(parts, "-" + xv)
+					parts = append(parts, "-"+xv)
 				} else {
 					parts = append(parts, fmt.Sprintf("%d%s", coef, xv))
 				}
 			} else {
 				if coef == 1 {
-					parts = append(parts, "+" + xv)
+					parts = append(parts, "+"+xv)
 				} else if coef == -1 {
-					parts = append(parts, "-" + xv)
+					parts = append(parts, "-"+xv)
 				} else if coef > 0 {
 					parts = append(parts, fmt.Sprintf("+%d%s", coef, xv))
 				} else {
@@ -354,6 +351,10 @@ func evalParamSystemTitle(inst *Instance) (interface{}, error) {
 		if val == -1 {
 			return "-" + xv
 		}
+		if val < 0 {
+			// 负系数自带 "-"，不能再加前缀 "+"，否则会得到 "+-2x_{}" 这种错误写法。
+			return fmt.Sprintf("%d%s", val, xv)
+		}
 		return fmt.Sprintf("+%d%s", val, xv)
 	}
 
@@ -399,7 +400,8 @@ func formatPolynomialFromVec(v *VectorInt) string {
 		isFirst := len(terms) == 0
 		switch k {
 		case 0: // constant
-			if isFirst {
+			if isFirst || val < 0 {
+				// 负值自带 "-"，不再前缀 "+"，避免 "+-3"。
 				terms = append(terms, fmt.Sprintf("%d", val))
 			} else {
 				terms = append(terms, fmt.Sprintf("+%d", val))
@@ -418,6 +420,8 @@ func formatPolynomialFromVec(v *VectorInt) string {
 					terms = append(terms, "+x")
 				} else if val == -1 {
 					terms = append(terms, "-x")
+				} else if val < 0 {
+					terms = append(terms, fmt.Sprintf("%dx", val))
 				} else {
 					terms = append(terms, fmt.Sprintf("+%dx", val))
 				}
@@ -436,6 +440,8 @@ func formatPolynomialFromVec(v *VectorInt) string {
 					terms = append(terms, "+x^2")
 				} else if val == -1 {
 					terms = append(terms, "-x^2")
+				} else if val < 0 {
+					terms = append(terms, fmt.Sprintf("%dx^2", val))
 				} else {
 					terms = append(terms, fmt.Sprintf("+%dx^2", val))
 				}
@@ -457,7 +463,7 @@ func formatLinearTransformTitle(m *MatrixInt) string {
 	for i := 0; i < n; i++ {
 		var parts []string
 		for j := 0; j < m.C; j++ {
-		 coef := m.A[i][j]
+			coef := m.A[i][j]
 			if coef == 0 {
 				continue
 			}
@@ -503,7 +509,7 @@ func formatBasisLinearComboTitle(m *MatrixInt) string {
 	for j := 0; j < m.C; j++ {
 		var parts []string
 		for i := 0; i < n; i++ {
-		 coef := m.A[i][j]
+			coef := m.A[i][j]
 			if coef == 0 {
 				continue
 			}
