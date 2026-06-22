@@ -139,7 +139,7 @@ func buildChapter5_3() dsl.Problem {
 		ID:      ProblemID(k),
 		Version: "bank-v1",
 		Title: fmt.Sprintf(
-			`已知三阶矩阵 $A$ 的三个特征值分别为 {{eig_text}}，则 $A^\*$ 的三个特征值及 $\det(A^2+6A-2E)$（前三空顺序任意，共 4 空）：%s`,
+			`已知三阶矩阵 $A$ 的三个特征值分别为 {{eig_text}}，则 $A^*$ 的三个特征值及 $\det(A^2+6A-2E)$（前三空顺序任意，共 4 空）：%s`,
 			joinBlankPlaceholders(ids)),
 		Variables: map[string]dsl.Variable{
 			"A": {Kind: "matrix", Rows: 3, Cols: 3, Generator: map[string]interface{}{"rule": "diagonal_distinct", "min": -6, "max": 6}},
